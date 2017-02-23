@@ -1,11 +1,14 @@
 'use strict';
 
 var mongoose = require('mongoose'),
-    Schema = mongoose.Schema;
+  Schema = mongoose.Schema;
 
 var ChallangeSchema = new Schema({
-  name: String,
-  info: String,
+  noteId: Schema.Types.ObjectId,
+  openedOn: Date,
+  closedOn: Date,
+  Published: Boolean,
+  Closed: Boolean,
   active: Boolean
 });
 
