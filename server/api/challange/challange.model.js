@@ -4,11 +4,11 @@ var mongoose = require('mongoose'),
   Schema = mongoose.Schema;
 
 var ChallangeSchema = new Schema({
-  noteId: Schema.Types.ObjectId,
+  title: String,
   openedOn: Date,
   closedOn: Date,
-  Published: Boolean,
-  Closed: Boolean,
+  published: Boolean,
+  closed: Boolean,
   active: Boolean
 });
 

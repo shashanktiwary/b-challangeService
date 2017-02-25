@@ -5,7 +5,8 @@ var mongoose = require('mongoose'),
 
 var SubmitionSchema = new Schema({
     challangeId: Schema.Types.ObjectId,
-    noteId: Schema.Types.ObjectId,
+    title: String,
+    note: String,
     submitted: Boolean,
     SubmittedOn: Date
 });

@@ -16,18 +16,7 @@ var Challange = require('./challange.model');
 exports.index = function (req, res) {
   Challange.find(function (err, challanges) {
     if (err) { return handleError(res, err); }
-    return res.status(200).json([
-      {
-        id: 'abcd',
-        openDate: new Date(),
-        title: 'Hello world'
-      },
-      {
-        id: 'ab',
-        openDate: new Date(),
-        title: 'Hi there!'
-      }
-    ]);
+    return res.status(200).json(challanges);
   });
 };
 
