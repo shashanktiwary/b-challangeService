@@ -4,9 +4,7 @@
 
 'use strict';
 
-var GoogleTokenStrategy = require('passport-google-id-token');
-
-var express = require('express'); 
+var express = require('express');
 var morgan = require('morgan');
 var compression = require('compression');
 var bodyParser = require('body-parser');
@@ -15,9 +13,11 @@ var cookieParser = require('cookie-parser');
 var errorHandler = require('errorhandler');
 var path = require('path');
 var config = require('./environment');
-var passport = require('passport');
 var cors = require('cors');
+var passport = require('passport');
+var GoogleTokenStrategy = require('passport-google-id-token');
 var User = require('../api/user/user.model');
+
 module.exports = function (app) {
   var env = app.get('env');
 
@@ -32,14 +32,25 @@ module.exports = function (app) {
 
   passport.use(new GoogleTokenStrategy({
     clientID: "587152662839-vr7o37jcpn6ora2llurkdo07u75ne5vl.apps.googleusercontent.com",
-    clientSecret: "aj97pc2EkaAckmE8_mbgyYvt"
+    clientSecret: "aj97pc2EkaAckmE8_mbgyYvt",
+    passReqToCallback: true
   },
-    function (accessToken, refreshToken, profile, done) {
-      User.findOrCreate({ googleId: profile.id }, function (err, user) {
-        return done(err, user);
+    function (req, profile, sub, done) {
+      User.findOneAndUpdate({ email: profile.email }, { provider: "Google", sub: sub, email: profile.payload.email, name: profile.payload.name }, { upsert: true, new: true }, function (err, user) {
+        return done(err, user._doc);
       });
     }
   ));
+
+  // passport.serializeUser(function (user, done) {
+  //   done(null, user);
+  // });
+
+  // passport.deserializeUser(function (user, done) {
+  //   User.findById(user._id, function (err, user) {
+  //     done(err, user);
+  //   });
+  // });
 
   if ('production' === env) {
     app.use(morgan('dev'));
