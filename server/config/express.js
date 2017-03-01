@@ -36,7 +36,7 @@ module.exports = function (app) {
     passReqToCallback: true
   },
     function (req, profile, sub, done) {
-      User.findOneAndUpdate({ email: profile.email }, { provider: "Google", sub: sub, email: profile.payload.email, name: profile.payload.name }, { upsert: true, new: true }, function (err, user) {
+      User.findOneAndUpdate({ email: profile.payload.email }, { provider: "Google", sub: sub, email: profile.payload.email, name: profile.payload.name }, { upsert: true, new: true }, function (err, user) {
         return done(err, user._doc);
       });
     }

@@ -31,6 +31,11 @@ exports.show = function(req, res) {
 
 // Creates a new submition in the DB.
 exports.create = function(req, res) {
+  // challangeId: Schema.Types.ObjectId,
+  //   userId: Schema.Types.ObjectId,
+  //   notes: { [ title: String, note: String ] },
+  //   submitted: Boolean,
+  //   SubmittedOn: Date
   Submition.create(req.body, function(err, submition) {
     if(err) { return handleError(res, err); }
     return res.status(201).json(submition);
