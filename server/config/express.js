@@ -28,7 +28,7 @@ module.exports = function (app) {
   app.use(cookieParser());
   app.use(passport.initialize());
   app.use(cors());
-
+  app.disable('etag');
 
   passport.use(new GoogleTokenStrategy({
     clientID: "587152662839-vr7o37jcpn6ora2llurkdo07u75ne5vl.apps.googleusercontent.com",
@@ -36,7 +36,8 @@ module.exports = function (app) {
     passReqToCallback: true
   },
     function (req, profile, sub, done) {
-      User.findOneAndUpdate({ email: profile.payload.email }, { provider: "Google", sub: sub, email: profile.payload.email, name: profile.payload.name }, { upsert: true, new: true }, function (err, user) {
+      let userDoc = { provider: "Google", sub: sub, email: profile.payload.email, name: profile.payload.name };
+      User.findOneAndUpdate({ email: profile.payload.email }, userDoc, { upsert: true, new: true }, function (err, user) {
         return done(err, user._doc);
       });
     }

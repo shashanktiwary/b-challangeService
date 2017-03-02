@@ -1,6 +1,7 @@
 /**
  * Using Rails-like standard naming convention for endpoints.
  * GET     /challanges              ->  index
+ * GET     /challanges/current      ->  indexCurrent
  * POST    /challanges              ->  create
  * GET     /challanges/:id          ->  show
  * PUT     /challanges/:id          ->  update
@@ -11,13 +12,54 @@
 
 var _ = require('lodash');
 var Challange = require('./challange.model');
+var Submition = require('../submition/submition.model');
 
-// Get list of challanges
+// Get list of open challanges
 exports.index = function (req, res) {
-  Challange.find(function (err, challanges) {
-    if (err) { return handleError(res, err); }
-    return res.status(200).json(challanges);
-  });
+  let query = { userId: req.user._id };
+  Submition.find(query)
+    .select("challangeId")
+    .exec(function (err, ids) {
+      if (err) { return handleError(res, err); }
+
+      let challangesIds = (ids || []).map(function (v) { return v._doc.challangeId; });
+      let openChallanges = {
+        published: true,
+        closed: false,
+        active: true,
+        _id: { $nin: challangesIds }
+      };
+
+      Challange.find(openChallanges, function (err, challanges) {
+        if (err) { return handleError(res, err); }
+        return res.status(200).json(challanges);
+      });
+
+    });
+};
+
+// Get list of current challanges
+exports.indexCurrent = function (req, res) {
+  let query = { userId: req.user._id };
+  Submition.find(query)
+    .select("challangeId")
+    .exec(function (err, ids) {
+      if (err) { return handleError(res, err); }
+
+      let challangesIds = (ids || []).map(function (v) { return v._doc.challangeId; });
+      let openChallanges = {
+        published: true,
+        closed: false,
+        active: true,
+        _id: { $in: challangesIds }
+      };
+
+      Challange.find(openChallanges, function (err, challanges) {
+        if (err) { return handleError(res, err); }
+        return res.status(200).json(challanges);
+      });
+
+    });
 };
 
 // Get a single challange
