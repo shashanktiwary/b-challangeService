@@ -40,26 +40,23 @@ exports.index = function (req, res) {
 
 // Get list of current challanges
 exports.indexCurrent = function (req, res) {
-  let query = { userId: req.user._id };
-  Submition.find(query)
-    .select("challangeId")
-    .exec(function (err, ids) {
-      if (err) { return handleError(res, err); }
+  let openChallanges = {
+    published: true,
+    closed: false,
+    active: true
+  };
 
-      let challangesIds = (ids || []).map(function (v) { return v._doc.challangeId; });
-      let openChallanges = {
-        published: true,
-        closed: false,
-        active: true,
-        _id: { $in: challangesIds }
-      };
-
-      Challange.find(openChallanges, function (err, challanges) {
+  Challange.find(openChallanges).select("_id").exec(function (err, challanges) {
+    if (err) { return handleError(res, err); }
+    let ids = (challanges || []).map(function (v) { return v._doc._id; });
+    let query = { userId: req.user._id, challangeId: { $in: ids } };
+    Submition.find(query)
+      .populate("challangeId")
+      .exec(function (err, ids) {
         if (err) { return handleError(res, err); }
-        return res.status(200).json(challanges);
+        return res.status(200).json((ids || []).map(function (v) { return v._doc; }));
       });
-
-    });
+  });
 };
 
 // Get a single challange

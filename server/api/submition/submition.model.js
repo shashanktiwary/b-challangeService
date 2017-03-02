@@ -4,7 +4,7 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
 var SubmitionSchema = new Schema({
-    challangeId: Schema.Types.ObjectId,
+    challangeId: { type: Schema.Types.ObjectId, ref: 'Challange' },
     userId: Schema.Types.ObjectId,
     notes: [{ title: String, note: String }],
     submitted: Boolean,
