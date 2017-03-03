@@ -8,6 +8,7 @@ var router = express.Router();
 
 router.get('/', passport.authenticate('google-id-token', { session: false }), controller.index);
 router.get('/current', passport.authenticate('google-id-token', { session: false }), controller.indexCurrent);
+router.get('/:challangeId/submitions', passport.authenticate('google-id-token', { session: false }), controller.participatesNote);
 router.get('/:id', passport.authenticate('google-id-token', { session: false }), controller.show);
 router.post('/', passport.authenticate('google-id-token', { session: false }), controller.create);
 router.put('/:id', passport.authenticate('google-id-token', { session: false }), controller.update);

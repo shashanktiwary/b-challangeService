@@ -13,6 +13,7 @@
 var _ = require('lodash');
 var Challange = require('./challange.model');
 var Submition = require('../submition/submition.model');
+var mongoose = require('mongoose');
 
 // Get list of open challanges
 exports.index = function (req, res) {
@@ -56,6 +57,24 @@ exports.indexCurrent = function (req, res) {
         if (err) { return handleError(res, err); }
         return res.status(200).json((ids || []).map(function (v) { return v._doc; }));
       });
+  });
+};
+
+// Get list of participates submition in a challange
+exports.participatesNote = function (req, res) {
+  let matchQuery = {
+    "$match": {
+      userId: { $ne: req.user._id },
+      challangeId: new mongoose.Types.ObjectId(req.params.challangeId),
+      "votes.userId": { $ne: req.user._id }
+    }
+  };
+
+  var projection = { $project: { userId: 0, submitted: 0, submittedOn: 0, "votes": 0 } };
+  
+  Submition.aggregate([{ $unwind: "$notes" }, { $unwind: "$votes" }, matchQuery, projection]).exec(function (err, submitions) {
+    if (err) { return handleError(res, err); }
+    return res.json(submitions);
   });
 };
 

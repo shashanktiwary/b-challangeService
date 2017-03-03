@@ -11,6 +11,7 @@
 
 var _ = require('lodash');
 var Submition = require('./submition.model');
+var mongoose = require('mongoose');
 
 // Get list of submitions
 exports.index = function (req, res) {
@@ -63,6 +64,24 @@ exports.update = function (req, res) {
     });
   });
 };
+
+exports.vote = function (req, res) {
+  var noteId = new mongoose.Types.ObjectId(req.body.id)
+  var query = {
+    _id: new mongoose.Types.ObjectId(req.params.submitionId),
+    "notes._id": noteId
+  };
+
+  Submition.findById(query, function (err, submition) {
+    if (err) { return handleError(res, err); }
+    if (!submition) { return res.status(404).send('Not Found'); }
+
+    submition.update({ $addToSet: { "votes": { noteId: noteId, userId: req.user._id, power: 1 } } }, function (err) {
+      if (err) { return handleError(res, err); }
+      return res.status(200).json(submition);
+    });
+  });
+}
 
 // Deletes a submition from the DB.
 exports.destroy = function (req, res) {
