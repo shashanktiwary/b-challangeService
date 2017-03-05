@@ -66,13 +66,21 @@ exports.participatesNote = function (req, res) {
     "$match": {
       userId: { $ne: req.user._id },
       challangeId: new mongoose.Types.ObjectId(req.params.challangeId),
-      "votes.userId": { $ne: req.user._id }
+      // "votes.userId": { $ne: req.user._id }
     }
   };
 
-  var projection = { $project: { userId: 0, submitted: 0, submittedOn: 0, "votes": 0 } };
-  
-  Submition.aggregate([{ $unwind: "$notes" }, { $unwind: "$votes" }, matchQuery, projection]).exec(function (err, submitions) {
+  var projection = {
+    $project: {
+      challangeId: 1,
+      notes: 1,
+      voted: {
+        $eq: ["voted.userId", req.user._id]
+      }
+    }
+  };
+
+  Submition.aggregate([{ $unwind: "$notes" }, matchQuery, projection]).exec(function (err, submitions) {
     if (err) { return handleError(res, err); }
     return res.json(submitions);
   });
