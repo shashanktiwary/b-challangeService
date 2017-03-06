@@ -76,7 +76,8 @@ exports.participatesNote = function (req, res) {
       notes: 1,
       voted: {
         $eq: ["voted.userId", req.user._id]
-      }
+      },
+      count: { $size: "$votes" }
     }
   };
 
