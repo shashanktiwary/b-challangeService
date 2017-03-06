@@ -1,6 +1,6 @@
 deployment:
   dockerhub:
-    branch:master
+    branch: master
     commands:
       - $DOCKER_HUB_TIGGER
 language: node_js
