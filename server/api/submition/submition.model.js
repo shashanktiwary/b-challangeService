@@ -6,7 +6,7 @@ var mongoose = require('mongoose'),
 var SubmitionSchema = new Schema({
     challangeId: { type: Schema.Types.ObjectId, ref: 'Challange' },
     userId: Schema.Types.ObjectId,
-    notes: [{ title: String, note: String }],
+    notes: [{ title: String, note: String, voteCount: Schema.Types.Number, voted:[Schema.Types.ObjectId] }],
     votes: [{ userId: Schema.Types.ObjectId, noteId: Schema.Types.ObjectId, power: Schema.Types.Number }],
     submitted: Boolean,
     submittedOn: Date

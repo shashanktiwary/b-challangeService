@@ -42,7 +42,7 @@ exports.create = function (req, res) {
 
   submition.notes = new Array();
   for (let i = 0; i < req.body.notes.length; i++) {
-    submition.notes.push({ title: req.body.notes[i].title, note: req.body.notes[i].note });
+    submition.notes.push({ title: req.body.notes[i].title, note: req.body.notes[i].note, voteCount: 0 });
   }
 
   Submition.create(submition, function (err, submition) {
@@ -72,15 +72,16 @@ exports.vote = function (req, res) {
     "notes._id": noteId
   };
 
-  Submition.findById(query, function (err, submition) {
-    if (err) { return handleError(res, err); }
-    if (!submition) { return res.status(404).send('Not Found'); }
+  var updateState = {
+    $addToSet: { "votes": { noteId: noteId, userId: req.user._id, power: 1 } }, $inc: { "notes.$.voteCount": 1 },
+    $addToSet: { "notes.$.voted": req.user._id }
+  };
 
-    submition.update({ $addToSet: { "votes": { noteId: noteId, userId: req.user._id, power: 1 } } }, function (err) {
-      if (err) { return handleError(res, err); }
-      return res.status(200).json(submition);
-    });
+  Submition.update(query, updateState, function (err, doc) {
+    if (err) { return handleError(res, err); }
+    return res.status(200).json(doc);
   });
+
 }
 
 // Deletes a submition from the DB.
