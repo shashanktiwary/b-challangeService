@@ -1,0 +1,4 @@
+# Ignore node package files
+node_modules
+.vscode
+npm-debug.log
